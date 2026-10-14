@@ -1,0 +1,22 @@
+{
+  "name": "pi-fm",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A supervising agent harness for pi: Define, Plan, Build, Verify, Review and Ship with isolated crew.",
+  "type": "module",
+  "keywords": ["pi-package"],
+  "engines": {
+    "node": ">=22.19"
+  },
+  "pi": {
+    "extensions": ["extensions/*.ts"],
+    "skills": ["skills"],
+    "prompts": ["prompts"],
+    "subagents": {
+      "agents": ["agents"]
+    }
+  },
+  "scripts": {
+    "test": "bin/pifm-test"
+  }
+}

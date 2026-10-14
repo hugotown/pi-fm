@@ -1,0 +1,36 @@
+{
+  "pi": {
+    "kind": "pi",
+    "args": ["--approve"],
+    "model": ["--model", "{model}"],
+    "effort": ["--thinking", "{effort}"],
+    "dialogs": [{ "match": "Trust project folder", "keys": ["Enter"] }]
+  },
+  "codex": {
+    "kind": "codex",
+    "args": [
+      "--dangerously-bypass-approvals-and-sandbox",
+      "-c", "check_for_update_on_startup=false",
+      "-c", "projects.\"{cwd}\".trust_level=\"trusted\""
+    ],
+    "model": ["-m", "{model}"],
+    "effort": ["-c", "model_reasoning_effort=\"{effort}\""],
+    "dialogs": [
+      { "match": "Run without daemon this time", "keys": ["1"] },
+      { "match": "Update available", "keys": ["2"] }
+    ]
+  },
+  "claude": {
+    "kind": "claude",
+    "args": ["--dangerously-skip-permissions"],
+    "model": ["--model", "{model}"],
+    "effort": ["--effort", "{effort}"],
+    "dialogs": [{ "match": "Yes, I trust this folder", "keys": ["Enter"] }]
+  },
+  "opencode": {
+    "kind": "opencode",
+    "args": [],
+    "model": ["--model", "{model}"],
+    "dialogs": []
+  }
+}

@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Start the pi-fm supervisor: an interactive pi session whose working directory is the
+# operational home, so pi loads the harness package and persona from $PIFM_HOME.
+set -euo pipefail
+ROOT="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.." && pwd)"
+export PIFM_HOME="${PIFM_HOME:-$HOME/pi-fm-home}"
+export PIFM_ROLE=primary
+export PATH="$ROOT/bin:$PATH"
+# Crew worktrees from pi-subagents live inside the home, never next to the project clones.
+export PI_SUBAGENTS_WORKTREE_DIR="$PIFM_HOME/worktrees/crew"
+
+"$ROOT/bin/pifm" init >/dev/null
+
+# The supervisor's own model comes from the dispatch table, like every other role.
+profile="$("$ROOT/bin/pifm" resolve supervisor)"
+model="$(sed -n 's/.* model=\([^ ]*\).*/\1/p' <<<"$profile")"
+effort="$(sed -n 's/.* effort=\([^ ]*\).*/\1/p' <<<"$profile")"
+
+cd "$PIFM_HOME"
+exec pi --approve --model "$model" --thinking "$effort" "$@"

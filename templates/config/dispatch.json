@@ -1,0 +1,124 @@
+{
+  "rules": [
+    {
+      "name": "supervisor",
+      "when": "The pi-fm supervisor session itself.",
+      "use": [
+        { "harness": "pi", "model": "google/gemini-3.1-pro-preview", "effort": "high" },
+        { "harness": "pi", "model": "kimi-coding/k3", "effort": "high" }
+      ],
+      "why": "Long-context model for the orchestrator; Kimi K3 as fallback."
+    },
+    {
+      "name": "plan",
+      "when": "Planning: turning a spec into tasks, or any request with ambiguity about what to build.",
+      "use": [
+        { "harness": "codex", "model": "gpt-6.1-sol", "effort": "xhigh", "mechanism": "external" },
+        { "harness": "claude", "model": "opus", "effort": "xhigh", "mechanism": "external" },
+        { "harness": "pi", "model": "google/gemini-3.1-pro-preview", "effort": "high" }
+      ],
+      "why": "Captain rule (2026-10-02): Sol and Opus are reserved for planning and code review."
+    },
+    {
+      "name": "review",
+      "when": "Code review of a task branch; the deliverable is findings.",
+      "use": [
+        { "harness": "claude", "model": "opus", "effort": "high", "mechanism": "external" },
+        { "harness": "codex", "model": "gpt-6.1-sol", "effort": "high", "mechanism": "external" },
+        { "harness": "pi", "model": "google/gemini-3.1-pro-preview", "effort": "high" }
+      ],
+      "why": "Captain rule (2026-10-02): Sol and Opus are reserved for planning and code review."
+    },
+    {
+      "name": "design",
+      "when": "UX or UI design, mockups, visual direction, game feel.",
+      "use": [
+        { "harness": "codex", "model": "gpt-6-astra", "effort": "xhigh" },
+        { "harness": "claude", "model": "fable", "effort": "xhigh" },
+        { "harness": "pi", "model": "google/gemini-3.1-pro-preview", "effort": "high" }
+      ],
+      "why": "Captain rule (2026-10-02): Astra and Fable are reserved for design work."
+    },
+    {
+      "name": "build-hard",
+      "when": "Hard but clear work where mistakes are costly: business logic, schemas, money, concurrency, security.",
+      "use": [
+        { "harness": "opencode", "model": "opencode-go/glm-5.3" },
+        { "harness": "opencode", "model": "opencode-go/deepseek-v4-pro" },
+        { "harness": "pi", "model": "kimi-coding/k3", "effort": "high" },
+        { "harness": "codex", "model": "gpt-5.6-terra", "effort": "high" }
+      ],
+      "why": "Spend priority (captain, 2026-10-02): OpenCode Go first, then Kimi, then OpenAI and Gemini, then Claude."
+    },
+    {
+      "name": "build-large",
+      "when": "Complicated but clear development: the approach is known but the change is large.",
+      "use": [
+        { "harness": "opencode", "model": "opencode-go/deepseek-v4-pro" },
+        { "harness": "opencode", "model": "opencode-go/glm-5.3" },
+        { "harness": "pi", "model": "kimi-coding/k3", "effort": "high" },
+        { "harness": "codex", "model": "gpt-5.6-terra", "effort": "high" },
+        { "harness": "pi", "model": "google/gemini-3.8-flash", "effort": "high" }
+      ],
+      "why": "Workhorse band, same spend priority."
+    },
+    {
+      "name": "build-bounded",
+      "when": "Bounded work: a small feature or a bug fix in a few files.",
+      "use": [
+        { "harness": "opencode", "model": "opencode-go/qwen3.7-plus" },
+        { "harness": "pi", "model": "kimi-coding/k3", "effort": "medium" },
+        { "harness": "pi", "model": "google/gemini-3.8-flash", "effort": "high" },
+        { "harness": "claude", "model": "sonnet", "effort": "medium" }
+      ],
+      "why": "Workhorse band, same spend priority."
+    },
+    {
+      "name": "build-parallel",
+      "when": "Executing one slice of a plan designed for parallelism.",
+      "use": [
+        { "harness": "pi", "model": "kimi-coding/k3", "effort": "medium" },
+        { "harness": "opencode", "model": "opencode-go/kimi-k3" }
+      ],
+      "why": "Captain rule (2026-10-04): K3 runs through pi."
+    },
+    {
+      "name": "trivial",
+      "when": "A mechanical edit with no judgment: rename, typo, formatting, dependency bump.",
+      "use": [
+        { "harness": "pi", "model": "google/gemini-3.8-flash", "effort": "low" },
+        { "harness": "codex", "model": "gpt-6-luna", "effort": "low" }
+      ],
+      "why": "Cheapest capable models."
+    },
+    {
+      "name": "lookup",
+      "when": "A read-only question: where or how something is used, summarise a log.",
+      "use": [{ "harness": "pi", "model": "google/gemini-3.8-flash", "effort": "low" }],
+      "why": "Cheapest capable model."
+    },
+    {
+      "name": "retry",
+      "when": "A previous worker failed, got stuck, or produced an unusable result on this task.",
+      "use": [
+        { "harness": "opencode", "model": "opencode-go/glm-5.3" },
+        { "harness": "pi", "model": "kimi-coding/k3", "effort": "high" },
+        { "harness": "codex", "model": "gpt-5.6-terra", "effort": "high" }
+      ],
+      "why": "A different model family than the one that failed."
+    },
+    {
+      "name": "fix",
+      "when": "Fix round after review findings, run in a pane with review_loop.",
+      "use": [
+        { "harness": "pi", "model": "kimi-coding/k3", "effort": "high", "mechanism": "pane" },
+        { "harness": "pi", "model": "google/gemini-3.8-flash", "effort": "high", "mechanism": "pane" }
+      ],
+      "why": "review_loop needs an interactive pi session."
+    }
+  ],
+  "default": [
+    { "harness": "pi", "model": "kimi-coding/k3", "effort": "medium" },
+    { "harness": "pi", "model": "google/gemini-3.8-flash", "effort": "medium" }
+  ]
+}

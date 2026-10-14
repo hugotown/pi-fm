@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Run the pi-fm test suite: unit tests for lib/, then each example's own verify script if asked.
+set -euo pipefail
+ROOT="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.." && pwd)"
+cd "$ROOT"
+bash -n bin/pifm bin/pi-fm bin/pifm-test
+node --no-warnings --test tests/*.test.ts

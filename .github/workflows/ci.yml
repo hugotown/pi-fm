@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  harness:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: bin/pifm-test
+
+  examples:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Run every example's verify.sh
+        run: |
+          shopt -s nullglob
+          status=0
+          for script in examples/*/verify.sh; do
+            echo "::group::$script"
+            (cd "$(dirname "$script")" && timeout 1800 ./verify.sh) || status=1
+            echo "::endgroup::"
+          done
+          exit $status
