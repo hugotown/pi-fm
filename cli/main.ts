@@ -46,7 +46,7 @@ function need<T>(v: T | undefined, what: string): T {
 
 const USAGE = `pifm <command> ...
 
-Setup      init | doctor | update
+Setup      init | doctor | update | version
 Projects   project add <name> <remote> [--mode pr|local] [--yolo] [--desc text] | project list | project sync <name>
 Tasks      task new <id> --project <p> --title <t> [--kind ship|scout] [--epic e] [--verify cmd]
            (write $PIFM_HOME/data/<id>/task.md with "## Intent" and "## Spec" first)
@@ -123,6 +123,11 @@ export function main(argv: string[]): number {
     case "--help":
       console.log(USAGE);
       return 0;
+    case "version": {
+      const pkg = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8"));
+      console.log(pkg.version);
+      return 0;
+    }
     case "init":
       init();
       return 0;
