@@ -123,6 +123,11 @@ export function main(argv: string[]): number {
     case "--help":
       console.log(USAGE);
       return 0;
+    case "version": {
+      const pkg = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8"));
+      console.log(pkg.version);
+      return 0;
+    }
     case "init":
       init();
       return 0;
